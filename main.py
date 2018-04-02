@@ -15,11 +15,10 @@ import commandParser
 
 app = Flask(__name__)
 
-line_bot_api = LineBotApi('oNGn3oq8iaMElqhtMj5QTSB8HAH+HA9lmCa30M1Hoj70s4i0K8fZJzDIp27XqsVUXMR0wk2p0vtMuXPayEZc7Bg8OakQtLM1pnqZOBvR6E2eQ1rok/FfNEZ78V/2dSkKDsdGaBEyAadj2FSQSRpaSwdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('023cd423342443f80b2138ad547c7d6d')
+line_bot_api = LineBotApi('')
+handler = WebhookHandler('')
 
-state = game.GameState()
-
+stateList = {}
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -54,6 +53,12 @@ def handle_message(event):
     command = commandParser.splitCommand(event.message.text)
     if(command == None):
         return None
+
+    if id in stateList:
+        state = stateList[id]
+    else:
+        state = game.GameState()
+        stateList[id] = state
 
     reply = []
     name = profile.display_name
@@ -102,7 +107,7 @@ def handle_message(event):
             line_bot_api.reply_message(
                 event.reply_token, reply)
             return None
-            
+
         ret = game.awnserQuestion(state, command, name, id)
         if(ret == 1):
             reply.append(TextSendMessage(text="@%s\nOther room playing, Please Wait"%name))
@@ -112,7 +117,7 @@ def handle_message(event):
 
         text = "@%s\n"%name + state.awnsered
         if(game.isCorret(state)):
-            text = text + " --> CORRECT!\nScore = Points%d\nNext Question"%state.score[name]
+            text = text + " --> CORRECT!\nScore = %d Points\nNext Question"%state.score[name]
             reply.append(StickerSendMessage(package_id='2', sticker_id='144'))
             reply.append(TextSendMessage(text=text))
             game.gameRestart(state)
