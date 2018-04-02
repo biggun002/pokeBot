@@ -75,7 +75,16 @@ def handle_message(event):
     elif(command == 'end'):
         ret = game.gameEnd(state, id)
         if(ret == 0):
-            reply.append(TextSendMessage(text="== End Game =="))
+            winner = ""
+            winScore = 0
+            text = "== End Game =="
+            for key in state.score:
+                text = text+"\n%s --> %d Points"%(key,state.score[key])
+                if(state.score[key] > winScore):
+                    winScore = state.score[key]
+                    winner = key
+            text = text + "\nThe winner is [%s] !"%winner
+            reply.append(TextSendMessage(text=text))
             line_bot_api.reply_message(
                 event.reply_token, reply)
             return None
@@ -85,7 +94,16 @@ def handle_message(event):
         reply.append(ImageSendMessage(original_content_url=state.path, preview_image_url=state.path))
         reply.append(TextSendMessage(text=state.awnsered))
     elif(state.progress == 2):
-        ret = game.awnserQuestion(state, command, id)
+        if(command == 'score'):
+            text="=== Score ==="
+            for key in state.score:
+                text = text+"\n%s --> %d Points"%(key,state.score[key])
+            reply.append(TextSendMessage(text=text))
+            line_bot_api.reply_message(
+                event.reply_token, reply)
+            return None
+            
+        ret = game.awnserQuestion(state, command, name, id)
         if(ret == 1):
             reply.append(TextSendMessage(text="@%s\nOther room playing, Please Wait"%name))
             line_bot_api.reply_message(
@@ -94,7 +112,7 @@ def handle_message(event):
 
         text = "@%s\n"%name + state.awnsered
         if(game.isCorret(state)):
-            text = text + " --> CORRECT!\nNext Question"
+            text = text + " --> CORRECT!\nScore = Points%d\nNext Question"%state.score[name]
             reply.append(StickerSendMessage(package_id='2', sticker_id='144'))
             reply.append(TextSendMessage(text=text))
             game.gameRestart(state)

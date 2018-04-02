@@ -19,6 +19,7 @@ class GameState:
         self.hint = 0
         self.progress = 0
         self.path = ""
+        self.score = {}
 
 
 def checkPermission(state,roomID):
@@ -31,6 +32,7 @@ def gameStart(state, roomID):
     if state.isStart == False :
         state.isStart = True
         state.roomID = roomID
+        state.score = {}
         state.progress = 1
         return 0
     elif state.roomID == roomID :
@@ -72,7 +74,7 @@ def getQuestion(state):
     state.path = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + str(selectI) + ".png"
     print(state.path)
 
-def awnserQuestion(state, awnser, roomID):
+def awnserQuestion(state, awnser, user, roomID):
     if checkPermission(state, roomID) == False:
         return 1
     if(state.isStart == 0):
@@ -107,6 +109,12 @@ def awnserQuestion(state, awnser, roomID):
                 break
 
     state.awnsered = "".join(stringList)
+    if(state.correctPos == state.len):
+        if user in state.score:
+            print("indict")
+            state.score[user] = state.score[user] + 1
+        else:
+            state.score[user] = 1
     return 0
 
 def isCorret(state):
