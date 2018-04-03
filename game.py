@@ -20,6 +20,7 @@ class GameState:
         self.progress = 0
         self.path = ""
         self.score = {}
+        self.isEnd = 0
 
 
 def checkPermission(state,roomID):
@@ -34,6 +35,7 @@ def gameStart(state, roomID):
         state.roomID = roomID
         state.score = {}
         state.progress = 1
+        state.isEnd = 0
         return 0
     elif state.roomID == roomID :
         return 1
@@ -49,6 +51,7 @@ def gameRestart(state):
     state.hint = 0
     state.progress = 1
     state.path = ""
+    state.isEnd = 0
 
 def gameEnd(state, roomID):
     if checkPermission(state, roomID) == True and state.isStart == True:
@@ -61,6 +64,7 @@ def gameEnd(state, roomID):
         state.progress = 0
         state.path = ""
         state.isStart = False
+        state.isEnd = 1
         return 0
 
 def getQuestion(state):
@@ -115,6 +119,9 @@ def awnserQuestion(state, awnser, user, roomID):
             state.score[user] = state.score[user] + 1
         else:
             state.score[user] = 1
+            
+        if(state.score[user] >= 3):
+            state.isEnd = 1
     return 0
 
 def isCorret(state):

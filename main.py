@@ -66,7 +66,7 @@ def handle_message(event):
     if(command == 'play'):
         ret = game.gameStart(state, id)
         if(ret == 0):
-            reply.append(TextSendMessage(text="== Start Game ==\nWho's That Pokemon?\nStart command with colon\n:play = play game\n:end = end game\n:<awnser> = awnser Ex. :pikachu"))
+            reply.append(TextSendMessage(text="== Start Game ==\nWho's That Pokemon?\nStart command with colon\n:play = play game\n:end = end game\n:score = view score\n:<awnser> = awnser Ex. :pikachu"))
         elif(ret == 1):
             reply.append(TextSendMessage(text="@%s\nGame already started"%name))
             line_bot_api.reply_message(
@@ -120,6 +120,23 @@ def handle_message(event):
             text = text + " --> CORRECT!\nScore = %d Points\nNext Question"%state.score[name]
             reply.append(StickerSendMessage(package_id='2', sticker_id='144'))
             reply.append(TextSendMessage(text=text))
+            if(state.isEnd == 1):
+                ret = game.gameEnd(state, id)
+                if(ret == 0):
+                    winner = ""
+                    winScore = 0
+                    text = "== End Game =="
+                    for key in state.score:
+                        text = text+"\n%s --> %d Points"%(key,state.score[key])
+                        if(state.score[key] > winScore):
+                            winScore = state.score[key]
+                            winner = key
+                    text = text + "\nThe winner is [%s] !"%winner
+                    reply.append(TextSendMessage(text=text))
+                    line_bot_api.reply_message(
+                        event.reply_token, reply)
+                    return None
+
             game.gameRestart(state)
             game.getQuestion(state)
             reply.append(ImageSendMessage(original_content_url=state.path, preview_image_url=state.path))
