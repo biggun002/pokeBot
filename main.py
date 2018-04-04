@@ -12,11 +12,12 @@ from linebot.models import (
 
 import game
 import commandParser
+import os
 
 app = Flask(__name__)
 
-line_bot_api = LineBotApi('')
-handler = WebhookHandler('')
+line_bot_api = LineBotApi(os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None))
+handler = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET', None))
 
 stateList = {}
 
