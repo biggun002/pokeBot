@@ -68,7 +68,7 @@ def gameEnd(state, roomID):
         return 0
 
 def getQuestion(state):
-    #selectI = randint(0, 190) + 1
+    selectI = randint(0, 190) + 1
     #pic = pb.pokemon_sprite(selectI)
     state.pokeName = nameList[selectI-1].upper()
     state.len = len(state.pokeName)
@@ -122,7 +122,7 @@ def awnserQuestion(state, awnser, user, roomID):
             state.score[user] = state.score[user] + 1
         else:
             state.score[user] = 1
-            
+
         if(state.score[user] >= 3):
             state.isEnd = 1
     return 0
