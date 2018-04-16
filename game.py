@@ -68,11 +68,14 @@ def gameEnd(state, roomID):
         return 0
 
 def getQuestion(state):
-    selectI = randint(0, 100) + 1
+    #selectI = randint(0, 190) + 1
     #pic = pb.pokemon_sprite(selectI)
     state.pokeName = nameList[selectI-1].upper()
     state.len = len(state.pokeName)
     for i in range(0, state.len):
+        if state.pokeName[i] < 'A' or state.pokeName[i] > 'z':
+            state.awnsered = state.awnsered + state.pokeName[i]
+            state.correctPos = state.correctPos + 1
         state.awnsered = state.awnsered + "_ "
     state.progress = 2
     state.path = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + str(selectI) + ".png"
